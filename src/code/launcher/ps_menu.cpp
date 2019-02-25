@@ -3,7 +3,7 @@
 //
 
 #include "ps_menu.h"
-
+#include "../engine/psmc.h"
 PsMenu::PsMenu(SDL_Renderer *renderer1, string name1, string texPath) : PsObj(renderer1, name1, "") {
     path = texPath;
     loadAssets();
@@ -14,6 +14,9 @@ void PsMenu::loadAssets() {
     guide = IMG_LoadTexture(renderer, (path + "/CB/Manual_ICN.png").c_str());
     memcard = IMG_LoadTexture(renderer, (path + "/CB/MemoryCard_ICN.png").c_str());
     savestate = IMG_LoadTexture(renderer, (path + "/CB/Resume.png").c_str());
+    psmc ms;
+    ms.loadFile("card1.mcd");
+    guide = ms.entries[0].getGameIcon(renderer);
     x = 640 - 118 / 2;
     y = 520;
     oy = y;

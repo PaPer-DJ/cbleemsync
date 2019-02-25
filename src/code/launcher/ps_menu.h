@@ -21,6 +21,7 @@ public:
 
     SDL_Texture *resume= nullptr;
 
+    SDL_Texture *saveIcon= nullptr;
 
 
     int x,y,oy,ox;

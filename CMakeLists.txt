@@ -39,6 +39,10 @@ add_executable(autobleem-gui
         src/code/engine/cfgprocessor.h
         src/code/engine/memcard.cpp
         src/code/engine/memcard.h
+		src/code/engine/psmc.h
+		src/code/engine/psmc.cpp
+		src/code/engine/psmcsave.h
+		src/code/engine/psmcsave.cpp
         src/code/gui/gui_about.cpp
         src/code/gui/gui_about.h
         src/code/gui/gui_screen.cpp
@@ -93,4 +97,4 @@ add_custom_command(TARGET autobleem-gui PRE_BUILD
 configure_file(src/resources/default.lic default.lic COPYONLY)
 configure_file(src/resources/default.png default.png COPYONLY)
 configure_file(src/resources/pcsx.cfg pcsx.cfg COPYONLY)
-
+configure_file(src/resources/shiftjis.dat shiftjis.dat COPYONLY)
