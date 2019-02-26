@@ -33,13 +33,19 @@ SDL_Texture *psmcsave::getGameIcon(SDL_Renderer *renderer) {
     const int ICON_BEGIN = 0x60;
     const int ICON_END = 0x7F;
     const int FRAME_SIZE = 0x7F;
-    char color[4];
+    unsigned char color[4];
     vector<char*> colorPalette;
     uint8_t pixels[16*16*4];
     int colPos = 0;
     int colPas = 0;
-    for(int i = 0; i < 16; i+2){
-        uint16_t word = saveBuffer[ICON_BEGIN+i]+saveBuffer[ICON_BEGIN+i+1];
+    for(int i = 0; i < 32; i+2){
+        uint16_t fB = (uint16_t)saveBuffer[ICON_BEGIN + i];
+        uint16_t lB = (uint16_t)saveBuffer[ICON_BEGIN + i+1];
+        uint16_t word = fB << 8 + lB;
+        unsigned char R = (word & 0x3F) << 3;
+        unsigned char G = (word & 0x3E0) >> 2;
+        unsigned char B = (word & 0x7C00) >> 7;
+        printf("ok");
     }
     SDL_UpdateTexture(icon, NULL, pixels,4);
     return icon;
