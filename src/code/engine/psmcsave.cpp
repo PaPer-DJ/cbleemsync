@@ -29,25 +29,46 @@ string psmcsave::getGameName() {
 }
 
 SDL_Texture *psmcsave::getGameIcon(SDL_Renderer *renderer) {
-    SDL_Texture *icon = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA5551,SDL_TEXTUREACCESS_STATIC,16,16);
-    const int ICON_BEGIN = 0x60;
-    const int ICON_END = 0x7F;
+    SDL_Texture *icon = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_STATIC,16,16);
+    const int PALETTE_BEGIN = 0x60;
+    const int ICON_BEGIN = 0x80;
     const int FRAME_SIZE = 0x7F;
-    unsigned char color[4];
-    vector<char*> colorPalette;
+    unsigned char *color[4];
+    unsigned char colorPalette[16][4];
     uint8_t pixels[16*16*4];
-    int colPos = 0;
-    int colPas = 0;
-    for(int i = 0; i < 32; i+2){
-        uint16_t fB = (uint16_t)saveBuffer[ICON_BEGIN + i];
-        uint16_t lB = (uint16_t)saveBuffer[ICON_BEGIN + i+1];
-        uint16_t word = fB << 8 + lB;
+    int pixPos = 0;
+    for(int i = 0; i < 32; i+=2){
+        uint16_t fB = (uint16_t)saveBuffer[PALETTE_BEGIN + i];
+        uint16_t lB = (uint16_t)saveBuffer[PALETTE_BEGIN + i+1];
+        uint16_t word = (lB << 8) + fB;
         unsigned char R = (word & 0x3F) << 3;
         unsigned char G = (word & 0x3E0) >> 2;
         unsigned char B = (word & 0x7C00) >> 7;
-        printf("ok");
+        unsigned char A = ((word & 32768) >> 15 )==1 ? true:false;
+        /*color[0] = &R;
+        color[1] = &G;
+        color[2] = &B;
+        color[3] = &A;*/
+        colorPalette[i/2][0] = R;
+        colorPalette[i/2][1] = G;
+        colorPalette[i/2][2] = B;
+        colorPalette[i/2][3] = A;
     }
-    SDL_UpdateTexture(icon, NULL, pixels,4);
+    for(int i = ICON_BEGIN; i < ICON_BEGIN+FRAME_SIZE+1;i++){
+        uint16_t bytes = saveBuffer[i];
+        uint16_t color2 = (bytes & 0xF);
+        uint16_t color1 = (bytes & 0xF0) >> 4;
+        pixels[pixPos] = 1;
+        pixels[pixPos+1] = colorPalette[color2][2];
+        pixels[pixPos+2] = colorPalette[color2][1];
+        pixels[pixPos+3] = colorPalette[color2][0];
+        pixels[pixPos+4] = 1;
+        pixels[pixPos+5] = colorPalette[color1][2];
+        pixels[pixPos+6] = colorPalette[color1][1];
+        pixels[pixPos+7] = colorPalette[color1][0];
+        pixPos+=8;
+    }
+    SDL_UpdateTexture(icon, NULL, pixels,16*4);
     return icon;
 }
 
